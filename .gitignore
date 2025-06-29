@@ -1,0 +1,15 @@
+# Ignore Python cache and venv
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Ignore data and outputs
+data/*
+!data/.gitkeep
+outputs/*
+!outputs/.gitkeep
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
