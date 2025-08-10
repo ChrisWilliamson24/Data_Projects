@@ -59,3 +59,36 @@ cat = cat.sort_values("variance", ascending=False)
 print(cat.head())
 
 # month investigation
+
+mon = combined.groupby("month", as_index=False).agg(
+    budget=("amount_budget", "sum"),
+    actual=("amount_actual", "sum"),
+    variance=("variance", "sum"),
+)
+mon["variance_pct"] = mon["variance"] / mon["budget"].replace(0, pd.NA)
+
+mon_chrono = mon.sort_values("month", ascending=True)
+mon_diag = mon.sort_values("variance", ascending=False)
+
+# quick sanity check for the grouped data
+sum_check = (
+    combined["amount_budget"].sum() == mon["budget"].sum()
+    and combined["amount_actual"].sum() == mon["actual"].sum()
+    and combined["variance"].sum() == mon["variance"].sum()
+)
+if not sum_check:
+    print("Warning: Budget amounts do not match across tables!")
+else:
+    print("Totals match across tables.")
+
+# find the top 5 entries with the highest variance percentage
+combined_over_budget = combined[combined["variance"] > 0]
+combined_over_budget = combined_over_budget.sort_values(
+    "variance_pct", ascending=False
+).head(5)
+
+print(combined_over_budget.head())
+
+# check for missing values and check the data types
+print(combined_over_budget.isna().sum())
+print(combined_over_budget.dtypes)
